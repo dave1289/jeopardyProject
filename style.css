@@ -1,0 +1,24 @@
+#game-board{
+    margin-top: 75px;
+}
+
+.card{
+    margin-top: 18px;
+    color: white;
+    border: solid blue 5px;
+    border-radius: 100;
+}
+
+.card-body{
+    background-color: blue;
+    border: solid blue 5px;
+    border-radius: 100;
+}
+
+.card-body:hover{
+    background-color: darkblue;
+}
+
+body {
+    background-color: teal;
+}
