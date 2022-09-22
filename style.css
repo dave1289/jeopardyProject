@@ -22,3 +22,8 @@
 body {
     background-color: teal;
 }
+
+p {
+    font-size:1.25rem;
+    text-decoration: underline;
+}
