@@ -1,19 +1,18 @@
 //Pulls random question from API based on value and category **MUST IMPLEMENT THIS**
+let catQuestions = []
 let gameCats = []
 let catIds = []
-async function randQuestion(category) {
-    const res = await axios.get(`https://jservice.io/api/clues?category=${category}`)
-    const data = res.data[0]
-    const q = data.question
-    const a = data.answer
-    const question = {q, a}
-    console.log(question)
-    return question;
+let guesses = [[],[],[],[],[],[]]
+function randQuestion(clues, column) {
+    let x = Math.floor(Math.random()*clues.length)
+    guesses[column].push(x)
+    return clues[x].question
 }
+
 
 //pulls starting categories for game
 async function getCategories(){
-    const res = await axios.get('https://jservice.io/api/categories?count=100&offset=101')
+    const res = await axios.get('https://jservice.io/api/categories?count=100&offset=1262')
     gameCats = []
     const dupeChk = []
     const catsFinal = []
@@ -32,8 +31,20 @@ async function getCategories(){
         newCat = catsFinal[item];
         gameCats.push(newCat);
     }
+    //extractCatId pulls ID info from gameCategories array, may streamline this into one function later
     extractCatId(gameCats)
     populateCats();
+    //adds category questions into arrays(indexes match column values which return on click)
+    Promise.all(categoryQuestionPull())
+    newCat = ''
+}
+
+async function categoryQuestionPull() {
+    catQuestions = []
+    for (id of catIds) {
+    const res = await axios.get(`https://jservice.io/api/category?id=${id}`)
+    const clues = [res.data];
+    catQuestions.push(clues)}
 }
 
 function populateCats(){
@@ -51,9 +62,22 @@ function extractCatId(array){
 }
 
 //start handler
-$('#start').on('click', function(e){
+$('#start').on('click',async function(e){
+    $('.loader').css('display', 'block')
     e.preventDefault();
     getCategories();
+    setTimeout(function(){
+        $('.loader').css('display', 'none')
+    $('#game-board').css('display', 'inline-block')
+    },500)
+})
+
+$('#refresh').on('click', function(){
+    $('.loader').css('display', 'block')
+    setTimeout(function(){
+        $('.loader').css('display', 'none')
+    $('#game-board').css('display', 'none')
+    },200)
 })
 
 //question click handler
@@ -61,8 +85,9 @@ $('#start').on('click', function(e){
 //must implement further changes
 $(".card").on('click', function(e){
     //pulls column number from clicked card for category, col # is id index of catIds
-    console.log(e.target.dataset.col)
+    let focus = e.target;
     let column = e.target.dataset.col;
-    let id = catIds[column];    
-    randQuestion(id)
+    let category = catQuestions[column];
+    let clues = category[0].clues
+    focus.textContent = randQuestion(clues, column)
 })
