@@ -12,6 +12,7 @@ const gameBoard = [
 let cats = []
 let clues = [[],[],[],[],[],[]]
 
+//gets categories at random from jservice API, making sure starting 
 async function getCategories() {
     cats = []
     const res = await axios.get(`https://jservice.io/api/categories?count=6&offset=${Math.floor(Math.random() * 123 +100)}`);
@@ -23,12 +24,14 @@ async function getCategories() {
     }
 }
 
+//puts category names over columns (header of div grid system (HTML gameboard))
 function populateCats(){
     for (let i = 0; i < 6; i++) {
         $(`#column${i}`).text(cats[i].title)
     }
 }
 
+//puts all clues into appropriate array in clues array (each inner array corresponds to one column left to right)
 async function pullClues(arr){
     clues = [[],[],[],[],[],[]]
     for (let i = 0; i< 6; i++) {
@@ -38,6 +41,7 @@ async function pullClues(arr){
     }
 }
 
+//clears board for refresh button, resets divs to not contain question or answer classes
 function clearBoard() {
     const divs = document.querySelectorAll('.card-body');
     for (div of divs) {
@@ -47,6 +51,7 @@ function clearBoard() {
     }
 }
 
+//start button: shows loader then gathers data for gameboard, finally populates and displays gameboard (hides loader)
 $('#start').on('click',async function(e){
     $('.loader').css('display', 'block')
     getCategories();
@@ -58,6 +63,7 @@ $('#start').on('click',async function(e){
     },500)
 })
 
+//refreshes page: displays loading indicator before clearing page/running clearboard (clears div text and question/answer classes)
 $('#refresh').on('click', function(){
     $('.loader').css('display', 'block')
     setTimeout(function(){
@@ -78,6 +84,7 @@ $('.card').on('click', function(e){
    }
    catch {
     focus.textContent = 'Question error - category too short.'
+    focus.classList.add('answer')
    }
 }
    else {
